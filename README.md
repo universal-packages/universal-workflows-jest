@@ -4,7 +4,7 @@
 [![Testing](https://github.com/universal-packages/universal-workflows-jest/actions/workflows/testing.yml/badge.svg)](https://github.com/universal-packages/universal-workflows-jest/actions/workflows/testing.yml)
 [![codecov](https://codecov.io/gh/universal-packages/universal-workflows-jest/branch/main/graph/badge.svg?token=CXPJSN8IGL)](https://codecov.io/gh/universal-packages/universal-workflows-jest)
 
-Jest matchers for [Background Jobs](https://github.com/universal-packages/universal-workflows) testing.
+Jest matchers for [Workflows](https://github.com/universal-packages/universal-workflows) testing.
 
 ## Install
 

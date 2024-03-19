@@ -1,0 +1,6 @@
+name: Successful workflow
+
+routines:
+  echo:
+    steps:
+      - run: echo success

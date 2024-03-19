@@ -1,0 +1,8 @@
+name: Successful workflow
+
+routines:
+  echo:
+    steps:
+      - name: first-result
+        run: get-result
+      - run: ${{ outputs[routine.name].first-result }}
