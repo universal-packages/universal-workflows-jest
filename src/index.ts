@@ -45,6 +45,13 @@ global.workflowsJest = {
       private options: any
       private name: string
 
+      public get graph() {
+        return {
+          name: this.name,
+          routines: []
+        }
+      }
+
       public constructor(name: string, options: any) {
         super()
         this.name = name
