@@ -4,6 +4,7 @@ import { BuildFromOptions, Status, Workflow } from '@universal-packages/workflow
 import EventEmitter from 'events'
 
 import './globals'
+import { ProcessCommandEntry } from './globals'
 
 const WORKFLOWS_JEST = {
   mocked: false,
@@ -135,8 +136,59 @@ function toHaveBeenBuildAndRunWithVariables(workflow: string, variables: Record<
   }
 }
 
+function toHaveRanCommands(workflow: Workflow, processCommandEntries: ProcessCommandEntry[]): jest.CustomMatcherResult {
+  const pass = TestEngine.commandHistory.every((processEntry, index) => {
+    const processCommandEntry = processCommandEntries[index]
+
+    if (processCommandEntry) {
+      const commandParts = processCommandEntry.command.split(' ')
+      const actualCommand = commandParts[0]
+      const actualArgs = commandParts.slice(1)
+
+      return (
+        this.equals(actualCommand, processEntry.command) &&
+        this.equals(actualArgs, processEntry.args) &&
+        this.equals(processCommandEntry.env || {}, processEntry.env) &&
+        this.equals(processCommandEntry.workingDirectory, processEntry.workingDirectory)
+      )
+    }
+
+    return false
+  })
+
+  if (pass) {
+    return {
+      message: () => `expected "${workflow.name || 'Workflow'}" not to have ran provided commands, but it did exactly that`,
+      pass
+    }
+  } else {
+    const generatedFromHistory = TestEngine.commandHistory.map((processEntry) => {
+      return {
+        command: processEntry.command + (processEntry.args.length > 0 ? ' ' + processEntry.args.join(' ') : ''),
+        env: processEntry.env,
+        workingDirectory: processEntry.workingDirectory
+      }
+    })
+    const generatedFromEntries = processCommandEntries.map((processCommandEntry) => {
+      return {
+        command: processCommandEntry.command,
+        env: processCommandEntry.env || {},
+        workingDirectory: processCommandEntry.workingDirectory
+      }
+    })
+
+    const commandsToPrint = this.utils.diff(generatedFromHistory, generatedFromEntries)
+
+    return {
+      message: () => `expected "${workflow.name || 'Workflow'}" to have ran provided commands, but it did not\n\nCommands have discrepancies:\n\n${commandsToPrint}`,
+      pass
+    }
+  }
+}
+
 expect.extend({
-  toHaveFinishWithStatus,
   toHaveBeenBuildAndRun,
-  toHaveBeenBuildAndRunWithVariables
+  toHaveBeenBuildAndRunWithVariables,
+  toHaveFinishWithStatus,
+  toHaveRanCommands
 })

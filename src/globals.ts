@@ -7,6 +7,12 @@ interface ProcessMockDescriptor {
   result: string
 }
 
+export interface ProcessCommandEntry {
+  command: string
+  env?: Record<string, string>
+  workingDirectory?: string
+}
+
 interface WorkflowJestRunOptions extends BuildFromOptions {
   targetMockResults?: ProcessMockDescriptor[]
 }
@@ -19,9 +25,10 @@ declare global {
 
   namespace jest {
     interface Matchers<R> {
-      toHaveFinishWithStatus(status: Status): R
       toHaveBeenBuildAndRun(): R
       toHaveBeenBuildAndRunWithVariables(variables: Record<string, any>): R
+      toHaveFinishWithStatus(status: Status): R
+      toHaveRanCommands(commands: ProcessCommandEntry[]): R
     }
   }
 }

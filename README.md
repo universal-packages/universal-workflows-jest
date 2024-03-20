@@ -66,6 +66,21 @@ it('should have been build and run', async () => {
 })
 ```
 
+### toHaveRanCommands
+
+```js
+import { Workflows } from '@universal-packages/workflows'
+
+it('should be successful', async () => {
+  const workflow = await workflowsJest.run('my-workflow')
+
+  expect(workflow).toHaveRanCommands([
+    { command: 'git pull', workingDirectory: './my-repo' },
+    { command: 'npm install', workingDirectory: './my-repo' }
+  ])
+})
+```
+
 ## Typescript
 
 In order for typescript to see the global types you need to reference the types somewhere in your project, normally `./src/globals.d.ts`.
