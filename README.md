@@ -29,8 +29,6 @@ module.exports = {
 ### toHaveFinishWithStatus
 
 ```js
-import { Workflows } from '@universal-packages/workflows'
-
 it('should be successful', async () => {
   const workflow = await workflowsJest.run('my-workflow')
 
@@ -59,22 +57,22 @@ import { runApp } from './src'
 
 workflowsJest.mockRuns()
 
-it('should have been build and run', async () => {
+it('should have been build and run with variables', async () => {
   await runApp({ development: true, fast: true })
 
   expect('development-workflow').toHaveBeenBuildAndRunWithVariables({ fast: true })
 })
 ```
 
-### toHaveRanCommands
+### getCommandHistory
 
 ```js
-import { Workflows } from '@universal-packages/workflows'
+it('should be ran commands', async () => {
+  await workflowsJest.run('my-workflow')
 
-it('should be successful', async () => {
-  const workflow = await workflowsJest.run('my-workflow')
+  const commandHistory = workflowsJest.getCommandHistory()
 
-  expect(workflow).toHaveRanCommands([
+  expect(commandHistory).toEqual([
     { command: 'git pull', workingDirectory: './my-repo' },
     { command: 'npm install', workingDirectory: './my-repo' }
   ])

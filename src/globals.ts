@@ -7,18 +7,13 @@ interface ProcessMockDescriptor {
   result: string
 }
 
-export interface ProcessCommandEntry {
-  command: string
-  env?: Record<string, string>
-  workingDirectory?: string
-}
-
 interface WorkflowJestRunOptions extends BuildFromOptions {
   targetMockResults?: ProcessMockDescriptor[]
 }
 
 declare global {
   namespace workflowsJest {
+    function getCommandHistory(): ProcessCommandEntry[]
     function run(name: string, options?: WorkflowJestRunOptions): Promise<Workflow>
     function mockRuns(): void
   }
@@ -28,9 +23,14 @@ declare global {
       toHaveBeenBuildAndRun(): R
       toHaveBeenBuildAndRunWithVariables(variables: Record<string, any>): R
       toHaveFinishWithStatus(status: Status): R
-      toHaveRanCommands(commands: ProcessCommandEntry[]): R
     }
   }
+}
+
+export interface ProcessCommandEntry {
+  command: string
+  env?: Record<string, string>
+  workingDirectory?: string
 }
 
 export {}

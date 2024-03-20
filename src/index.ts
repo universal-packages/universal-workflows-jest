@@ -12,6 +12,16 @@ const WORKFLOWS_JEST = {
 }
 
 global.workflowsJest = {
+  getCommandHistory: (): ProcessCommandEntry[] => {
+    return TestEngine.commandHistory.map((processEntry) => {
+      const result: any = { command: processEntry.command + (processEntry.args.length > 0 ? ' ' + processEntry.args.join(' ') : '') }
+
+      if (Object.keys(processEntry.env).length > 0) result['env'] = processEntry.env
+      if (processEntry.workingDirectory) result['workingDirectory'] = processEntry.workingDirectory
+
+      return result
+    })
+  },
   run: async (name: string, options?): Promise<Workflow> => {
     if (options?.targetMockResults) {
       const { targetMockResults } = options
@@ -136,59 +146,8 @@ function toHaveBeenBuildAndRunWithVariables(workflow: string, variables: Record<
   }
 }
 
-function toHaveRanCommands(workflow: Workflow, processCommandEntries: ProcessCommandEntry[]): jest.CustomMatcherResult {
-  const pass = TestEngine.commandHistory.every((processEntry, index) => {
-    const processCommandEntry = processCommandEntries[index]
-
-    if (processCommandEntry) {
-      const commandParts = processCommandEntry.command.split(' ')
-      const actualCommand = commandParts[0]
-      const actualArgs = commandParts.slice(1)
-
-      return (
-        this.equals(actualCommand, processEntry.command) &&
-        this.equals(actualArgs, processEntry.args) &&
-        this.equals(processCommandEntry.env || {}, processEntry.env) &&
-        this.equals(processCommandEntry.workingDirectory, processEntry.workingDirectory)
-      )
-    }
-
-    return false
-  })
-
-  if (pass) {
-    return {
-      message: () => `expected "${workflow.name || 'Workflow'}" not to have ran provided commands, but it did exactly that`,
-      pass
-    }
-  } else {
-    const generatedFromHistory = TestEngine.commandHistory.map((processEntry) => {
-      return {
-        command: processEntry.command + (processEntry.args.length > 0 ? ' ' + processEntry.args.join(' ') : ''),
-        env: processEntry.env,
-        workingDirectory: processEntry.workingDirectory
-      }
-    })
-    const generatedFromEntries = processCommandEntries.map((processCommandEntry) => {
-      return {
-        command: processCommandEntry.command,
-        env: processCommandEntry.env || {},
-        workingDirectory: processCommandEntry.workingDirectory
-      }
-    })
-
-    const commandsToPrint = this.utils.diff(generatedFromHistory, generatedFromEntries)
-
-    return {
-      message: () => `expected "${workflow.name || 'Workflow'}" to have ran provided commands, but it did not\n\nCommands have discrepancies:\n\n${commandsToPrint}`,
-      pass
-    }
-  }
-}
-
 expect.extend({
   toHaveBeenBuildAndRun,
   toHaveBeenBuildAndRunWithVariables,
-  toHaveFinishWithStatus,
-  toHaveRanCommands
+  toHaveFinishWithStatus
 })
