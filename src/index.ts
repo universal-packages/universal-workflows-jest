@@ -1,6 +1,7 @@
 import { expect } from '@jest/globals'
 import { TestEngine } from '@universal-packages/sub-process'
 import { BuildFromOptions, Status, Workflow } from '@universal-packages/workflows'
+import EventEmitter from 'events'
 
 import './globals'
 
@@ -40,12 +41,23 @@ global.workflowsJest = {
   },
   mockRuns: () => {
     WORKFLOWS_JEST.mocked = true
-    Workflow.buildFrom = (name: string, options: BuildFromOptions): any => {
-      return {
-        run: () => {
-          WORKFLOWS_JEST.ranMockedWorkflows.push({ name, options })
-        }
+    class MockedWorkflow extends EventEmitter {
+      private options: any
+      private name: string
+
+      public constructor(name: string, options: any) {
+        super()
+        this.name = name
+        this.options = options
       }
+
+      public run() {
+        WORKFLOWS_JEST.ranMockedWorkflows.push({ name: this.name, options: this.options })
+      }
+    }
+
+    Workflow.buildFrom = (name: string, options: BuildFromOptions): any => {
+      return new MockedWorkflow(name, options)
     }
   }
 }
