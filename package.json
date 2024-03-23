@@ -16,7 +16,7 @@
     "update-universal-dependencies": "umaintenance update-universal-dependencies"
   },
   "peerDependencies": {
-    "@universal-packages/workflows": "^1.8.2"
+    "@universal-packages/workflows": "^1.8.9"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
