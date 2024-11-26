@@ -1,6 +1,6 @@
 {
   "name": "@universal-packages/workflows-jest",
-  "version": "1.2.20",
+  "version": "1.2.21",
   "description": "Jest matchers for universal workflows",
   "author": "David De Anda <david@universal-packages.com> (https://github.com/universal-packages)",
   "license": "MIT",
